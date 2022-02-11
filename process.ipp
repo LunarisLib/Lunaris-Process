@@ -2,17 +2,17 @@
 
 namespace Lunaris {
 
-	LUNARIS_DECL bool process_sync::read_flag() const
+	inline bool process_sync::read_flag() const
 	{
 		return m_mode != mode::WRITE; // READ || READWRITE
 	}
 
-	LUNARIS_DECL bool process_sync::write_flag() const
+	inline bool process_sync::write_flag() const
 	{
 		return m_mode != mode::READ; // WRITE || READWRITE
 	}
 
-	LUNARIS_DECL void process_sync::_i_open(const std::string& call, const std::initializer_list<std::string>& args)
+	inline void process_sync::_i_open(const std::string& call, const std::initializer_list<std::string>& args)
 	{
 #ifdef _WIN32
 		m_saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -176,23 +176,23 @@ namespace Lunaris {
 #endif // WIN32
 	}
 	
-	LUNARIS_DECL process_sync::process_sync(const std::string& call, const mode m)
+	inline process_sync::process_sync(const std::string& call, const mode m)
 		: m_mode(m)
 	{
 		_i_open(call, {});
 	}
 
-	LUNARIS_DECL process_sync::process_sync(const std::string& call, const std::initializer_list<std::string>& aas, const mode m)
+	inline process_sync::process_sync(const std::string& call, const std::initializer_list<std::string>& aas, const mode m)
 	{
 		_i_open(call, aas);
 	}
 
-	LUNARIS_DECL process_sync::~process_sync()
+	inline process_sync::~process_sync()
 	{
 		stop();
 	}
 
-	LUNARIS_DECL void process_sync::stop()
+	inline void process_sync::stop()
 	{
 #ifdef _WIN32
 		if (m_piProcInfo.hProcess != nullptr) {
@@ -232,7 +232,7 @@ namespace Lunaris {
 #endif
 	}
 
-	LUNARIS_DECL bool process_sync::write(std::string s, const bool addline)
+	inline bool process_sync::write(std::string s, const bool addline)
 	{
 		if (addline) s += '\n';
 #ifdef _WIN32
@@ -247,7 +247,7 @@ namespace Lunaris {
 #endif
 	}
 
-	LUNARIS_DECL std::string process_sync::read()
+	inline std::string process_sync::read()
 	{
 #ifdef _WIN32
 		if (!m_hChildStd_OUT_Rd || !read_flag()) return "";
@@ -292,7 +292,7 @@ namespace Lunaris {
 		return buf;
 	}
 
-	LUNARIS_DECL bool process_sync::has_read() const
+	inline bool process_sync::has_read() const
 	{
 #ifdef _WIN32
 		DWORD dwAvail = 0;
@@ -316,17 +316,17 @@ namespace Lunaris {
 #endif
 	}
 
-	LUNARIS_DECL bool process_sync::can_read() const
+	inline bool process_sync::can_read() const
 	{
 		return read_flag();
 	}
 
-	LUNARIS_DECL bool process_sync::can_write() const
+	inline bool process_sync::can_write() const
 	{
 		return write_flag(); // WRITE || READWRITE
 	}
 
-	LUNARIS_DECL bool process_sync::is_running() const
+	inline bool process_sync::is_running() const
 	{
 #ifdef _WIN32
 		DWORD code{};
@@ -340,7 +340,7 @@ namespace Lunaris {
 #endif
 	}
 
-	LUNARIS_DECL bool process_sync::valid() const
+	inline bool process_sync::valid() const
 	{
 #ifdef _WIN32
 		return is_running() && m_hChildStd_IN_Wr != 0 && m_hChildStd_OUT_Rd != 0;
@@ -349,7 +349,7 @@ namespace Lunaris {
 #endif
 	}
 
-	LUNARIS_DECL bool process_sync::empty() const
+	inline bool process_sync::empty() const
 	{
 		return !valid();
 	}
