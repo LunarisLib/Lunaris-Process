@@ -176,6 +176,8 @@ namespace Lunaris {
 		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
 		/// <returns>{bool} True if launched perfectly.</returns>
 		process_async(const std::string&, const std::initializer_list<std::string>&, std::function<void(process_sync&, const std::string&)>);
+        
+        ~process_async();
 
 		process_async(const process_async&) = delete;
 		process_async(process_async&&) = delete;

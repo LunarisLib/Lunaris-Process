@@ -401,6 +401,11 @@ namespace Lunaris {
 		m_autoout = std::thread([this] { run_async(); });
 	}
 
+	inline process_async::~process_async()
+	{
+		stop();
+	}
+
 	inline bool process_async::reset(const std::string& call, std::function<void(process_sync&, const std::string&)> f)
 	{
 		if (!f) return false;
@@ -442,6 +447,7 @@ namespace Lunaris {
 		m_keep_running = false;
 		if (m_proc) m_proc->stop();
 		if (m_autoout.joinable()) m_autoout.join();
+        m_proc.reset();
 	}
 
 	inline bool process_async::is_running() const
