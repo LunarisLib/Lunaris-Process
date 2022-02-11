@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Lunaris/__macro/macros.h>
-
 #ifdef _WIN32
 
 #include <Windows.h>
@@ -31,7 +29,7 @@ namespace Lunaris {
 	/// <para>This is a syncronous (read/write) process task manager.</para>
 	/// <para>Run apps with arguments on Windows and Linux easily. Same format, same power.</para>
 	/// </summary>
-	class process_sync : public NonCopyable, public NonMovable {
+	class process_sync {
 	public:
 		enum class mode { READ, WRITE, READWRITE };
 	private:
@@ -76,6 +74,11 @@ namespace Lunaris {
 		/// <param name="{std::initializer_list}">List of arguments.</param>
 		/// <param name="{mode}">IO mode.</param>
 		process_sync(const std::string&, const std::initializer_list<std::string>&, const mode);
+        
+        process_sync(const process_sync&) = delete;
+        process_sync(process_sync&&) = delete;
+        void operator=(const process_sync&) = delete;
+        void operator=(process_sync&&) = delete;
 
 		// dies
 		~process_sync();
