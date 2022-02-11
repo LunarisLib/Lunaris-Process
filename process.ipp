@@ -1,3 +1,4 @@
+#pragma once
 #include "process.h"
 
 namespace Lunaris {
@@ -352,6 +353,110 @@ namespace Lunaris {
 	inline bool process_sync::empty() const
 	{
 		return !valid();
+	}
+
+	inline void process_async::run_async()
+	{
+		while (m_keep_running) {
+			if (!m_proc) {
+				m_keep_running = false;
+				return;
+			}
+			if (!m_proc->is_running() && !m_proc->has_read()) {
+				m_keep_running = false;
+				return;
+			}
+
+			if (!m_proc->has_read()) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(20));
+				continue;
+			}
+
+			std::string str = m_proc->read();
+
+			if (!str.empty()) {
+				std::lock_guard<std::mutex> luck(m_saf);
+				m_autohandle(*m_proc, str);
+			}
+		}
+	}
+
+	inline process_async::process_async(const std::string& call, std::function<void(process_sync&, const std::string&)> f)
+		: m_autohandle(f)
+	{
+		if (!f) throw std::invalid_argument("Invalid function!");
+
+		m_proc = std::unique_ptr<process_sync>(new process_sync(call, process_sync::mode::READWRITE));
+		m_keep_running = true;
+		m_autoout = std::thread([this] { run_async(); });
+	}
+
+	inline process_async::process_async(const std::string& call, const std::initializer_list<std::string>& lst, std::function<void(process_sync&, const std::string&)> f)
+		: m_autohandle(f)
+	{
+		if (!f) throw std::invalid_argument("Invalid function!");
+
+		m_proc = std::unique_ptr<process_sync>(new process_sync(call, lst, process_sync::mode::READWRITE));
+		m_keep_running = true;
+		m_autoout = std::thread([this] { run_async(); });
+	}
+
+	inline bool process_async::reset(const std::string& call, std::function<void(process_sync&, const std::string&)> f)
+	{
+		if (!f) return false;
+
+		stop();
+
+		m_proc = std::unique_ptr<process_sync>(new process_sync(call, process_sync::mode::READWRITE));
+		m_keep_running = true;
+		m_autohandle = f;
+		m_autoout = std::thread([this] { run_async(); });
+
+		return true;
+	}
+
+	inline bool process_async::reset(const std::string& call, const std::initializer_list<std::string>& lst, std::function<void(process_sync&, const std::string&)> f)
+	{
+		if (!f) return false;
+
+		stop();
+
+		m_proc = std::unique_ptr<process_sync>(new process_sync(call, lst, process_sync::mode::READWRITE));
+		m_keep_running = true;
+		m_autohandle = f;
+		m_autoout = std::thread([this] { run_async(); });
+
+		return true;
+	}
+
+	inline bool process_async::reset_hook(std::function<void(process_sync&, const std::string&)> f)
+	{
+		if (!f) return false;
+		std::lock_guard<std::mutex> luck(m_saf);
+		m_autohandle = f;
+		return true;
+	}
+
+	inline void process_async::stop()
+	{
+		m_keep_running = false;
+		if (m_proc) m_proc->stop();
+		if (m_autoout.joinable()) m_autoout.join();
+	}
+
+	inline bool process_async::is_running() const
+	{
+		return m_keep_running || (m_proc && m_proc->is_running());
+	}
+
+	inline bool process_async::valid() const
+	{
+		return m_proc && m_proc->valid() && m_autohandle;
+	}
+
+	inline bool process_async::empty() const
+	{
+		return !m_proc || (m_proc && m_proc->empty()) || !m_autohandle;
 	}
 
 }

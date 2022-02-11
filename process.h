@@ -21,7 +21,9 @@
 #include <mutex>
 #include <string>
 #include <functional>
+#include <stdexcept>
 #include <initializer_list>
+#include <atomic>
 
 namespace Lunaris {
 
@@ -142,6 +144,96 @@ namespace Lunaris {
 		bool empty() const;
 	};
 
+	/// <summary>
+	/// <para>This is an asyncronous (read/write) process task manager.</para>
+	/// <para>Run apps with arguments on Windows and Linux easily. Same format, same power.</para>
+	/// <para>Hook a function to get lines and do its thing automatically.</para>
+	/// </summary>
+	class process_async {
+		std::function<void(process_sync&, const std::string&)> m_autohandle;
+		mutable std::mutex m_saf;
+		std::unique_ptr<process_sync> m_proc;
+		std::thread m_autoout;
+		std::atomic<bool> m_keep_running = false;
+
+		void run_async();
+	public:
+		process_async() = default;
+
+		/// <summary>
+		/// <para>Start process with argument and function.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if launched perfectly.</returns>
+		process_async(const std::string&, std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
+		/// <para>Start process with argument and function.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::initializer_list}">List of arguments.</param>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if launched perfectly.</returns>
+		process_async(const std::string&, const std::initializer_list<std::string>&, std::function<void(process_sync&, const std::string&)>);
+
+		process_async(const process_async&) = delete;
+		process_async(process_async&&) = delete;
+		void operator=(const process_async&) = delete;
+		void operator=(process_async&&) = delete;
+
+		/// <summary>
+		/// <para>Stop and start process with argument and function.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if launched perfectly.</returns>
+		bool reset(const std::string&, std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
+		/// <para>Stop and start process with argument and function.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::initializer_list}">List of arguments.</param>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if launched perfectly.</returns>
+		bool reset(const std::string&, const std::initializer_list<std::string>&, std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
+		/// <para>Apply other function on the fly.</para>
+		/// </summary>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if applied successfully..</returns>
+		bool reset_hook(std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
+		/// <para>Stop, close handles and reset function.</para>
+		/// </summary>
+		void stop();
+
+		/// <summary>
+		/// <para>Is the process running?</para>
+		/// <para>If the async thread or the process are valid, it's considered "running".</para>
+		/// </summary>
+		/// <returns>{bool} True if running.</returns>
+		bool is_running() const;
+
+		/// <summary>
+		/// <para>It is considered valid if:</para>
+		/// <para>1. Process is running;</para>
+		/// <para>2. Pipes are set and good.</para>
+		/// <para>2. There's a function linked to stdout.</para>
+		/// </summary>
+		/// <returns>{bool} True if valid.</returns>
+		bool valid() const;
+
+		/// <summary>
+		/// <para>It is considered empty if it's not valid.</para>
+		/// </summary>
+		/// <returns>{bool} Is it NOT valid?</returns>
+		bool empty() const;
+
+	};
 }
 
 #include "process.ipp"
