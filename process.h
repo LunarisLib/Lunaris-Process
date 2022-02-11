@@ -143,3 +143,5 @@ namespace Lunaris {
 	};
 
 }
+
+#include "process.ipp"
