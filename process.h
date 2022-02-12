@@ -60,7 +60,7 @@ namespace Lunaris {
 #endif
 		bool read_flag() const;
 		bool write_flag() const;
-		void _i_open(const std::string&, const std::initializer_list<std::string>&);
+		void _i_open(const std::string&, const std::vector<std::string>&);
 	public:
 		/// <summary>
 		/// <para>Start process by name.</para>
@@ -76,6 +76,14 @@ namespace Lunaris {
 		/// <param name="{std::initializer_list}">List of arguments.</param>
 		/// <param name="{mode}">IO mode.</param>
 		process_sync(const std::string&, const std::initializer_list<std::string>&, const mode);
+
+		/// <summary>
+		/// <para>Start process by name with arguments.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::vector}">List of arguments.</param>
+		/// <param name="{mode}">IO mode.</param>
+		process_sync(const std::string&, const std::vector<std::string>&, const mode);
         
         process_sync(const process_sync&) = delete;
         process_sync(process_sync&&) = delete;
@@ -176,6 +184,15 @@ namespace Lunaris {
 		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
 		/// <returns>{bool} True if launched perfectly.</returns>
 		process_async(const std::string&, const std::initializer_list<std::string>&, std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
+		/// <para>Start process with argument and function.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::vector}">List of arguments.</param>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if launched perfectly.</returns>
+		process_async(const std::string&, const std::vector<std::string>&, std::function<void(process_sync&, const std::string&)>);
         
         ~process_async();
 
@@ -202,11 +219,28 @@ namespace Lunaris {
 		bool reset(const std::string&, const std::initializer_list<std::string>&, std::function<void(process_sync&, const std::string&)>);
 
 		/// <summary>
+		/// <para>Stop and start process with argument and function.</para>
+		/// </summary>
+		/// <param name="{std::string}">App path or relative path.</param>
+		/// <param name="{std::vector}">List of arguments.</param>
+		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
+		/// <returns>{bool} True if launched perfectly.</returns>
+		bool reset(const std::string&, const std::vector<std::string>&, std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
 		/// <para>Apply other function on the fly.</para>
 		/// </summary>
 		/// <param name="{std::function}">A function that gets the line buffer and handle it.</param>
 		/// <returns>{bool} True if applied successfully..</returns>
 		bool reset_hook(std::function<void(process_sync&, const std::string&)>);
+
+		/// <summary>
+		/// <para>Sometimes you may write from outside the async function, so that's it.</para>
+		/// </summary>
+		/// <param name="{std::string}">Command or text to send.</param>
+		/// <param name="{bool}">Automatically add breakline after the string? (this is just a useful thing, but if you don't like that, you can disable it).</param>
+		/// <returns>{bool} False if any error, else true.</returns>
+		bool write(std::string, const bool = true);
 
 		/// <summary>
 		/// <para>Stop, close handles and reset function.</para>

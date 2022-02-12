@@ -13,7 +13,7 @@ namespace Lunaris {
 		return m_mode != mode::READ; // WRITE || READWRITE
 	}
 
-	inline void process_sync::_i_open(const std::string& call, const std::initializer_list<std::string>& args)
+	inline void process_sync::_i_open(const std::string& call, const std::vector<std::string>& args)
 	{
 #ifdef _WIN32
 		m_saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -184,6 +184,11 @@ namespace Lunaris {
 	}
 
 	inline process_sync::process_sync(const std::string& call, const std::initializer_list<std::string>& aas, const mode m)
+	{
+		_i_open(call, aas);
+	}
+
+	inline process_sync::process_sync(const std::string& call, const std::vector<std::string>& aas, const mode m)
 	{
 		_i_open(call, aas);
 	}
@@ -401,6 +406,16 @@ namespace Lunaris {
 		m_autoout = std::thread([this] { run_async(); });
 	}
 
+	inline process_async::process_async(const std::string& call, const std::vector<std::string>& lst, std::function<void(process_sync&, const std::string&)> f)
+		: m_autohandle(f)
+	{
+		if (!f) throw std::invalid_argument("Invalid function!");
+
+		m_proc = std::unique_ptr<process_sync>(new process_sync(call, lst, process_sync::mode::READWRITE));
+		m_keep_running = true;
+		m_autoout = std::thread([this] { run_async(); });
+	}
+
 	inline process_async::~process_async()
 	{
 		stop();
@@ -434,12 +449,33 @@ namespace Lunaris {
 		return true;
 	}
 
+	inline bool process_async::reset(const std::string& call, const std::vector<std::string>& lst, std::function<void(process_sync&, const std::string&)> f)
+	{
+		if (!f) return false;
+
+		stop();
+
+		m_proc = std::unique_ptr<process_sync>(new process_sync(call, lst, process_sync::mode::READWRITE));
+		m_keep_running = true;
+		m_autohandle = f;
+		m_autoout = std::thread([this] { run_async(); });
+
+		return true;
+	}
+
 	inline bool process_async::reset_hook(std::function<void(process_sync&, const std::string&)> f)
 	{
 		if (!f) return false;
 		std::lock_guard<std::mutex> luck(m_saf);
 		m_autohandle = f;
 		return true;
+	}
+
+	inline bool process_async::write(std::string s, const bool b)
+	{
+		std::lock_guard<std::mutex> luck(m_saf); // safe writing
+		if (!m_proc || !m_proc->can_write()) return false;
+		return m_proc->write(std::move(s), b);
 	}
 
 	inline void process_async::stop()
