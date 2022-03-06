@@ -184,11 +184,13 @@ namespace Lunaris {
 	}
 
 	inline process_sync::process_sync(const std::string& call, const std::initializer_list<std::string>& aas, const mode m)
+		: m_mode(m)
 	{
 		_i_open(call, aas);
 	}
 
 	inline process_sync::process_sync(const std::string& call, const std::vector<std::string>& aas, const mode m)
+		: m_mode(m)
 	{
 		_i_open(call, aas);
 	}
