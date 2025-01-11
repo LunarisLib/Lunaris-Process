@@ -83,7 +83,12 @@ namespace Lunaris {
 		m_siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 		std::string gen_tags = call;
-		for (const auto& it : args) gen_tags += (" " + it);
+		for (const auto& it : args) {
+			if (it.length() >= 2 && it.front() == '\"' && it.back() == '\"') {
+				gen_tags += (" " + it);
+			}
+			else gen_tags += (" \"" + it + "\"");
+		}
 
 		if (!CreateProcessA(nullptr,
 			const_cast<char*>(gen_tags.c_str()),	// command line 
@@ -134,7 +139,6 @@ namespace Lunaris {
 			if (aStdoutPipe[PIPE_WRITE] != 0 && dup2(aStdoutPipe[PIPE_WRITE], STDERR_FILENO) == -1) {
 				exit(errno);
 			}
-			printf("Starting '%s'...\n", call.c_str());
 
 			// all these are for use by parent only
 			if (aStdinPipe[PIPE_READ] != 0) close(aStdinPipe[PIPE_READ]);
@@ -147,7 +151,7 @@ namespace Lunaris {
 			aStdoutPipe[PIPE_WRITE] = 0;
 
 			std::vector<char*> adptargs;
-			adptargs.push_back((char*)call.c_str());
+			//adptargs.push_back((char*)call.c_str());
 			for (const auto& it : args) adptargs.push_back((char*)it.c_str());
 			adptargs.push_back((char*)nullptr);
 
