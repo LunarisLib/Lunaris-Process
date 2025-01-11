@@ -151,7 +151,7 @@ namespace Lunaris {
 			aStdoutPipe[PIPE_WRITE] = 0;
 
 			std::vector<char*> adptargs;
-			//adptargs.push_back((char*)call.c_str());
+			adptargs.push_back((char*)call.c_str());
 			for (const auto& it : args) adptargs.push_back((char*)it.c_str());
 			adptargs.push_back((char*)nullptr);
 
