@@ -1,12 +1,13 @@
-name: CMake CTest
+name: Deploy library
 
 on:
-  workflow_dispatch:
-  pull_request:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  test-project:
-    name: Building and testing on ${{ matrix.os }} - ${{ matrix.compiler }}
+  make-libs:
+    name: Building and deploying on ${{ matrix.os }} - ${{ matrix.compiler }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -15,18 +16,17 @@ jobs:
           - os: ubuntu-26.04
             compiler: gcc
             terminal: bash
+            archive_ext: tar.gz
 
           - os: windows-latest
             compiler: msvc
             terminal: bash
+            archive_ext: zip
 
           - os: windows-latest
             compiler: mingw
             terminal: msys2 {0}
-
-    defaults:
-      run:
-        shell: ${{ matrix.terminal }}
+            archive_ext: zip
 
     steps:
       - uses: actions/checkout@v7
@@ -36,5 +36,13 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           shell: ${{ matrix.terminal }}
-          install: false
+          install: true
           test: true
+            
+  release:
+    needs: make-libs
+    runs-on: ubuntu-latest    
+
+    steps:
+      - name: Make Release
+        uses: LunarisLib/actions/Release@revamp
