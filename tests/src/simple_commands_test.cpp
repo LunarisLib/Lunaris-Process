@@ -1,7 +1,6 @@
 #include <Lunaris/process.h>
 
 #include <iostream>
-#include <print>
 
 using namespace Lunaris::Process;
 
@@ -39,7 +38,7 @@ int main() {
 #endif
 
     for(const command& cmd : commands) {
-        std::print("Testing command: '{}' with arguments: '{}'\n", cmd.base, cmd.arguments);
+        std::printf("Testing command: '%s'\n", cmd.base.c_str());
 
         Process proc{cmd.base, cmd.arguments};
         std::vector<std::string> lines;
@@ -50,12 +49,12 @@ int main() {
             }
         }
 
-        std::print("- Got {} lines:\n", lines.size());
+        std::printf("- Got %zu lines:\n", lines.size());
         for(const auto& line : lines)
-            std::print("  - {}\n", line);
+            std::printf("  - %s\n", line.c_str());
 
         if (lines.size() < cmd.expected_min_responses_len) {
-            std::print("Mismatch of expected number of lines: {} < {} (min expected)!\n", lines.size(), cmd.expected_min_responses_len);
+            std::printf("Mismatch of expected number of lines: %zu < %zu (min expected)!\n", lines.size(), cmd.expected_min_responses_len);
             return 1;
         }
     }
