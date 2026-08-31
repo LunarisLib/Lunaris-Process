@@ -8,7 +8,7 @@ namespace Process {
         : m_data(platform::open(command, modes, {}))
     {}
 
-    Process::Process(const std::string& command, const std::initializer_list<std::string>& args, const e_modes& modes) 
+    Process::Process(const std::string& command, const std::vector<std::string>& args, const e_modes& modes) 
         : m_data(platform::open(command, modes, args))
     {}
 

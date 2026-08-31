@@ -1,0 +1,40 @@
+name: CMake CTest
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  test-project:
+    name: Building and testing on ${{ matrix.os }} - ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            terminal: bash
+
+          - os: windows-latest
+            compiler: msvc
+            terminal: bash
+
+          - os: windows-latest
+            compiler: mingw
+            terminal: msys2 {0}
+
+    defaults:
+      run:
+        shell: ${{ matrix.terminal }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build & Test
+        uses: LunarisLib/actions/Build@revamp
+        with:
+          compiler: ${{ matrix.compiler }}
+          shell: ${{ matrix.terminal }}
+          install: false
+          test: true

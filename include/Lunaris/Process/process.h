@@ -10,7 +10,7 @@ namespace Process {
     class Process {
     public:
         Process(const std::string& command, const e_modes& modes = e_modes::READ | e_modes::WRITE);
-        Process(const std::string& command, const std::initializer_list<std::string>& args, const e_modes& modes = e_modes::READ | e_modes::WRITE);
+        Process(const std::string& command, const std::vector<std::string>& args, const e_modes& modes = e_modes::READ | e_modes::WRITE);
 
         ~Process();
 

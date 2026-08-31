@@ -10,7 +10,7 @@ foreach(test_src ${TEST_SOURCES})
 
     add_executable(${test_name} ${test_src})
 
-    target_link_libraries(${test_name} PRIVATE lunaris-socket)
+    target_link_libraries(${test_name} PRIVATE lunaris-process)
     
     target_compile_definitions(${test_name} PRIVATE LUNARIS_DEBUG_FLAG_TEST)
 

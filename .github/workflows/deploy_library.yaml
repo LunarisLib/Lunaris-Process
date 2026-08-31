@@ -1,0 +1,48 @@
+name: Deploy library
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  make-libs:
+    name: Building and deploying on ${{ matrix.os }} - ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            terminal: bash
+            archive_ext: tar.gz
+
+          - os: windows-latest
+            compiler: msvc
+            terminal: bash
+            archive_ext: zip
+
+          - os: windows-latest
+            compiler: mingw
+            terminal: msys2 {0}
+            archive_ext: zip
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build & Test
+        uses: LunarisLib/actions/Build@revamp
+        with:
+          compiler: ${{ matrix.compiler }}
+          shell: ${{ matrix.terminal }}
+          install: true
+          test: true
+            
+  release:
+    needs: make-libs
+    runs-on: ubuntu-latest    
+
+    steps:
+      - name: Make Release
+        uses: LunarisLib/actions/Release@revamp
