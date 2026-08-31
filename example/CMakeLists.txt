@@ -5,7 +5,7 @@ project(lunaris-example LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(lunaris-process REQUIRED)
+find_package(lunaris-process REQUIRED HINTS ../install)
 
 add_executable(example main.cpp)
 

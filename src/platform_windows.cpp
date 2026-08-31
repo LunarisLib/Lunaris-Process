@@ -137,16 +137,25 @@ namespace platform{
 		std::string buf;
         char ch{};
 
-		while (1) {
+		for (unsigned t = 0; t < 10;) {
+			if (!has_read(data)) {
+				++t;
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+				continue;
+			}
+
 			DWORD got = 0;
 
 			if (!ReadFile(data.m_hChildStd_OUT_Rd, &ch, sizeof(char), &got, nullptr) || got == 0) {
 				if (get_state(data) != e_process_status::P_ACTIVE) return buf;
                 
+				++t;
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
 			}
 
+			t = 0;
+			
 			switch (ch) {
 			case '\r':
 			case '\n':

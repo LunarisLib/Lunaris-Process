@@ -7,6 +7,10 @@
 namespace Lunaris {
 namespace Process {
 
+    /**
+     * @brief Process is a wrapper of a call like in a terminal. You can use it to call 
+     * 
+     */
     class Process {
     public:
         Process(const std::string& command, const e_modes& modes = e_modes::READ | e_modes::WRITE);
