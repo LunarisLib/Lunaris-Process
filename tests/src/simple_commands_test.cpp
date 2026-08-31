@@ -20,10 +20,10 @@ int main() {
     const command commands[] = {
         {{"whoami"}, 1},
         {{"hostname"}, 1},
-        {{"echo", "\"is apple a fruit\""}, 1},
+        {{"cmd", "/c", "echo", "\"is apple a fruit\""}, 1},
         {{"ping", "-n", "5", "127.0.0.1"}, 6},
         {{"timeout", "/t", "5", "/nobreak"}, 0},
-        {{"dir"}, 3},
+        //{{"cmd", "/c", "dir"}, 3},
         {{"tasklist"}, 10}
     };
 #else

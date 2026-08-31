@@ -1,6 +1,8 @@
 #include <Lunaris/Process/platform.h>
 #include <Lunaris/Process/exception.h>
 
+#include <thread>
+
 namespace Lunaris {
 namespace Process {
 namespace platform{
@@ -16,9 +18,9 @@ namespace platform{
 		HANDLE hChildStd_OUT_Wr = nullptr; // this is deletable after startup apparently
 
 		const auto easy_cleanup = [&] {
-			if (pd.hChildStd_IN_Rd != nullptr) {
-				CloseHandle(pd.hChildStd_IN_Rd);
-				pd.hChildStd_IN_Rd = nullptr;
+			if (hChildStd_IN_Rd != nullptr) {
+				CloseHandle(hChildStd_IN_Rd);
+				hChildStd_IN_Rd = nullptr;
 			}
 			if (pd.m_hChildStd_IN_Wr != nullptr) {
 				CloseHandle(pd.m_hChildStd_IN_Wr);
@@ -28,14 +30,14 @@ namespace platform{
 				CloseHandle(pd.m_hChildStd_OUT_Rd);
 				pd.m_hChildStd_OUT_Rd = nullptr;
 			}
-			if (pd.hChildStd_OUT_Wr != nullptr) {
-				CloseHandle(pd.hChildStd_OUT_Wr);
-				pd.hChildStd_OUT_Wr = nullptr;
+			if (hChildStd_OUT_Wr != nullptr) {
+				CloseHandle(hChildStd_OUT_Wr);
+				hChildStd_OUT_Wr = nullptr;
 			}
 		};
 
         if (mode & e_modes::READ) {
-			if (!CreatePipe(&pd.m_hChildStd_OUT_Rd, &pd.hChildStd_OUT_Wr, &pd.m_saAttr, 0)) {
+			if (!CreatePipe(&pd.m_hChildStd_OUT_Rd, &hChildStd_OUT_Wr, &pd.m_saAttr, 0)) {
 				easy_cleanup();
 				throw process_exception("Could not create pipe for STDOUT of child process!");
 			}
@@ -46,7 +48,7 @@ namespace platform{
 		}
 
         if (mode & e_modes::WRITE) {
-			if (!CreatePipe(&pd.hChildStd_IN_Rd, &pd.m_hChildStd_IN_Wr, &pd.m_saAttr, 0)) {
+			if (!CreatePipe(&hChildStd_IN_Rd, &pd.m_hChildStd_IN_Wr, &pd.m_saAttr, 0)) {
 				easy_cleanup();
 				throw process_exception("Could not create pipe for STDIN of child process!");
 			}
@@ -66,11 +68,11 @@ namespace platform{
 		pd.m_siStartInfo.cb = sizeof(pd.m_siStartInfo);
 
         if (mode & e_modes::READ) {
-			pd.m_siStartInfo.hStdError = pd.hChildStd_OUT_Wr;
-			pd.m_siStartInfo.hStdOutput = pd.hChildStd_OUT_Wr;
+			pd.m_siStartInfo.hStdError = hChildStd_OUT_Wr;
+			pd.m_siStartInfo.hStdOutput = hChildStd_OUT_Wr;
 		}
         if (mode & e_modes::WRITE) {
-			pd.m_siStartInfo.hStdInput = pd.hChildStd_IN_Rd;
+			pd.m_siStartInfo.hStdInput = hChildStd_IN_Rd;
 		}
 		pd.m_siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
@@ -100,8 +102,8 @@ namespace platform{
 		CloseHandle(pd.m_piProcInfo.hThread);
 		pd.m_piProcInfo.hThread = nullptr;
 
-		CloseHandle(pd.hChildStd_OUT_Wr);
-		CloseHandle(pd.hChildStd_IN_Rd);
+		CloseHandle(hChildStd_OUT_Wr);
+		CloseHandle(hChildStd_IN_Rd);
 
 		return pd;
     }
@@ -130,7 +132,7 @@ namespace platform{
     }
     
     std::string read(const process_data& data) {
-		if (!data.m_hChildStd_OUT_Rd) return false;
+		if (!data.m_hChildStd_OUT_Rd) return {};
 
 		std::string buf;
         char ch{};
