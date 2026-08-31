@@ -33,15 +33,15 @@ namespace Process {
     }
 
     bool Process::running() const {
-        return platform::get_state(m_data) == e_process_status::ACTIVE;
+        return platform::get_state(m_data) == e_process_status::P_ACTIVE;
     }
 
     bool Process::valid() const {
-        return platform::get_state(m_data) != e_process_status::ERROR;
+        return platform::get_state(m_data) != e_process_status::P_ERROR;
     }
 
     Process::operator bool() const {
-        return platform::get_state(m_data) != e_process_status::ERROR;
+        return platform::get_state(m_data) != e_process_status::P_ERROR;
     }
 
 } // namespace Process

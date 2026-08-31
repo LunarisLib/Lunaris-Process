@@ -139,7 +139,7 @@ namespace platform{
 			DWORD got = 0;
 
 			if (!ReadFile(data.m_hChildStd_OUT_Rd, &ch, sizeof(char), &got, nullptr) || got == 0) {
-				if (get_state(data) != e_process_status::ACTIVE) return buf;
+				if (get_state(data) != e_process_status::P_ACTIVE) return buf;
                 
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
@@ -165,10 +165,10 @@ namespace platform{
     
     e_process_status get_state(const process_data& data) {
 		DWORD code{};
-		if (!GetExitCodeProcess(data.m_piProcInfo.hProcess, &code)) return e_process_status::ERROR;
+		if (!GetExitCodeProcess(data.m_piProcInfo.hProcess, &code)) return e_process_status::P_ERROR;
 		switch(code) {
-        case STILL_ACTIVE: return e_process_status::ACTIVE;
-        default: return code < 0xC0000000 ? e_process_status::EXITED : e_process_status::ERROR;
+        case STILL_ACTIVE: return e_process_status::P_ACTIVE;
+        default: return code < 0xC0000000 ? e_process_status::P_EXITED : e_process_status::P_ERROR;
         }
     }
     

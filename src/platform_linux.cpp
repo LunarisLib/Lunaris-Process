@@ -121,7 +121,7 @@ namespace platform{
 
 		while (1) {
 			if (::read(data.aStdoutPipe[c_read], &ch, sizeof(char)) == 0) {
-				if (get_state(data) != e_process_status::ACTIVE) return buf;
+				if (get_state(data) != e_process_status::P_ACTIVE) return buf;
                 
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
@@ -159,13 +159,13 @@ namespace platform{
     }
 
     e_process_status get_state(const process_data& data) {
-        if (data.m_nChildID == 0) return e_process_status::EXITED; // no child
+        if (data.m_nChildID == 0) return e_process_status::P_EXITED; // no child
 		int status{};
 		pid_t res = waitpid(data.m_nChildID, &status, WNOHANG);
         
         switch(res) {
-        case 0: return e_process_status::ACTIVE;
-        default: return res < 0 ? e_process_status::ERROR : e_process_status::EXITED;
+        case 0: return e_process_status::P_ACTIVE;
+        default: return res < 0 ? e_process_status::P_ERROR : e_process_status::P_EXITED;
         }
     }
 

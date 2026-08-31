@@ -49,9 +49,9 @@ namespace Process {
     };
 
     enum e_process_status {
-        ACTIVE = 0,
-        ERROR = -1,
-        EXITED = 1
+        P_ACTIVE = 0,
+        P_ERROR = -1,
+        P_EXITED = 1
     };
 
     constexpr e_modes operator|(const e_modes& lhs, const e_modes& rhs) {
