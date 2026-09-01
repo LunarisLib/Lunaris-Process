@@ -10,23 +10,24 @@ int main() {
 
     const std::string c_msg{"hello world echo"};
 #ifdef _WIN32
-    constexpr char cmd[] = "more";
+    constexpr char cmd[] = "more.com";
 #else
     constexpr char cmd[] = "cat";
 #endif
     Process proc{cmd};
 
     std::printf("Writing message...\n");
-    if (!proc.write(c_msg)) {
+    if (!proc.write(c_msg + "\r\n")) {
         std::printf("Failed to write message.\n");
         return 1;
     }
 
     std::printf("Reading back...\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     const auto back = proc.read();
 
     if (back != c_msg) {
-        std::printf("Message mismatch.\n");
+        std::printf("Message mismatch. '%s' != '%s'\n", back.c_str(), c_msg.c_str());
         return 2;
     }
 
