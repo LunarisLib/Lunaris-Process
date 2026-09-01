@@ -9,7 +9,12 @@ int main() {
     std::printf("Testing cat echoing...\n");
 
     const std::string c_msg{"hello world echo"};
-    Process proc("cat");
+#ifdef _WIN32
+    constexpr char cmd[] = "more";
+#else
+    constexpr char cmd[] = "cat";
+#endif
+    Process proc{cmd};
 
     std::printf("Writing message...\n");
     if (!proc.write(c_msg)) {

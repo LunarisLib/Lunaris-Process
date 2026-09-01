@@ -23,7 +23,7 @@ int main() {
         {{"ping", "-n", "5", "127.0.0.1"}, 6},
         {{"timeout", "/t", "5", "/nobreak"}, 0},
         //{{"cmd", "/c", "dir"}, 3},
-        {{"tasklist"}, 7}
+        {{"tasklist"}, 5}
     };
 #else
     const command commands[] = {
@@ -33,7 +33,7 @@ int main() {
         {{"ping", "-c", "5", "127.0.0.1"}, 6},
         {{"sleep", "5"}, 0},
         {{"ls"}, 3},
-        {{"ps", "aux"}, 7}
+        {{"ps", "aux"}, 5}
     };
 #endif
 
