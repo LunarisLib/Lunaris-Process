@@ -18,5 +18,5 @@ namespace Process {
         return std::runtime_error::what();
     }
 
-} // namespace Socket
+} // namespace Process
 } // namespace Lunaris

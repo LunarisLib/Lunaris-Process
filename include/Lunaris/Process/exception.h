@@ -13,5 +13,5 @@ namespace Process {
         const char* what() const noexcept;
     };
 
-} // namespace Socket
+} // namespace Process
 } // namespace Lunaris
