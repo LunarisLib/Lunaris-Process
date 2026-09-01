@@ -119,13 +119,22 @@ namespace platform{
 		std::string buf;
         char ch{};
 
-		while (1) {
-			if (::read(data.aStdoutPipe[c_read], &ch, sizeof(char)) == 0) {
-				if (get_state(data) != e_process_status::P_ACTIVE) return buf;
-                
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		for (unsigned t = 0; t < 10;) {
+			if (!has_read(data)) {
+				++t;
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
 				continue;
 			}
+
+			if (::read(data.aStdoutPipe[c_read], &ch, sizeof(char)) <= 0) {
+				if (get_state(data) != e_process_status::P_ACTIVE) return buf;
+                
+				++t;
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+				continue;
+			}
+
+			t = 0;
 
 			switch (ch) {
 			case '\r':

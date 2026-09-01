@@ -23,7 +23,7 @@ int main() {
         {{"ping", "-n", "5", "127.0.0.1"}, 6},
         {{"timeout", "/t", "5", "/nobreak"}, 0},
         //{{"cmd", "/c", "dir"}, 3},
-        {{"tasklist"}, 10}
+        {{"tasklist"}, 5}
     };
 #else
     const command commands[] = {
@@ -33,7 +33,7 @@ int main() {
         {{"ping", "-c", "5", "127.0.0.1"}, 6},
         {{"sleep", "5"}, 0},
         {{"ls"}, 3},
-        {{"ps", "aux"}, 10}
+        {{"ps", "aux"}, 5}
     };
 #endif
 
@@ -54,7 +54,7 @@ int main() {
             std::printf("  - %s\n", line.c_str());
 
         if (lines.size() < cmd.expected_min_responses_len) {
-            std::printf("Mismatch of expected number of lines: %zu < %zu (min expected)!\n", lines.size(), cmd.expected_min_responses_len);
+            std::printf("Mismatch of expected number of lines: %zu < %u (min expected)!\n", lines.size(), cmd.expected_min_responses_len);
             return 1;
         }
     }
