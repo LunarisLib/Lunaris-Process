@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Lunaris/Process/platform.h>
-
 #include <memory>
+
+#include <Lunaris/Process/platform.h>
 
 namespace Lunaris {
 namespace Process {
