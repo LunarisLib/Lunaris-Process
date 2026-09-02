@@ -39,22 +39,22 @@ namespace platform{
         if (mode & e_modes::READ) {
 			if (!CreatePipe(&pd.m_hChildStd_OUT_Rd, &hChildStd_OUT_Wr, &pd.m_saAttr, 0)) {
 				easy_cleanup();
-				throw process_exception("Could not create pipe for STDOUT of child process!");
+				throw ProcessException("Could not create pipe for STDOUT of child process!");
 			}
 			if (!SetHandleInformation(pd.m_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0)) {
 				easy_cleanup();
-				throw process_exception("Could not set up pipe for STDOUT of child process!");
+				throw ProcessException("Could not set up pipe for STDOUT of child process!");
 			}
 		}
 
         if (mode & e_modes::WRITE) {
 			if (!CreatePipe(&hChildStd_IN_Rd, &pd.m_hChildStd_IN_Wr, &pd.m_saAttr, 0)) {
 				easy_cleanup();
-				throw process_exception("Could not create pipe for STDIN of child process!");
+				throw ProcessException("Could not create pipe for STDIN of child process!");
 			}
 			if (!SetHandleInformation(pd.m_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0)) {
 				easy_cleanup();
-				throw process_exception("Could not set up pipe for STDIN of child process!");
+				throw ProcessException("Could not set up pipe for STDIN of child process!");
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace platform{
 			&pd.m_piProcInfo)			    		// receives PROCESS_INFORMATION
 			) {
 			easy_cleanup();
-			throw process_exception("Could not launch process!");
+			throw ProcessException("Could not launch process!");
 		}
 
 		CloseHandle(pd.m_piProcInfo.hThread);

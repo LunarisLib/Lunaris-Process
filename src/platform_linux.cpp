@@ -15,14 +15,14 @@ namespace platform{
 
         if (mode & e_modes::READ) {
             if (pipe(pd.aStdinPipe) < 0) {
-                throw process_exception("Could not create stdin pipe of child process!");
+                throw ProcessException("Could not create stdin pipe of child process!");
             }
         }
         if (mode & e_modes::WRITE) {
 			if (pipe(pd.aStdoutPipe) < 0) {
 				::close(pd.aStdinPipe[c_read]);
 				::close(pd.aStdinPipe[c_write]);
-				throw process_exception("Could not create stdout pipe of child process!");
+				throw ProcessException("Could not create stdout pipe of child process!");
 			}
         }
 
@@ -71,7 +71,7 @@ namespace platform{
 				pd.aStdinPipe[c_write] = 0;
 				pd.aStdoutPipe[c_read] = 0;
 				pd.aStdoutPipe[c_write] = 0;
-				throw process_exception("Could not start child process!");
+				throw ProcessException("Could not start child process!");
 			}
 			pd.m_nChildID = forkid;
 

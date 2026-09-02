@@ -5,10 +5,10 @@
 namespace Lunaris {
 namespace Process {
 
-    class process_exception : public std::runtime_error {
+    class ProcessException : public std::runtime_error {
     public:
-        explicit process_exception(const std::string&) noexcept;
-        explicit process_exception(const char*) noexcept;
+        explicit ProcessException(const std::string&) noexcept;
+        explicit ProcessException(const char*) noexcept;
 
         const char* what() const noexcept;
     };
